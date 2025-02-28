@@ -1,0 +1,47 @@
+.landing-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: calc(100vh - 112px); /* Full screen */
+    padding: 0 5%; /* Add some padding */
+    /* background-color: #f4f4f4; */
+}
+
+.text-container {
+    flex: 1; /* Take up half of the space */
+    max-width: 50%;
+}
+
+.text-container h1 {
+    font-size: 2.5rem;
+    color: #800000;
+    margin-bottom: 10px;
+}
+
+.text-container p {
+    font-size: 1.2rem;
+    color: #333;
+}
+
+.image-container {
+    flex: 1; /* Take up half of the space */
+    display: flex;
+    justify-content: center;
+}
+
+.image-container img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 768px) {
+    .landing-container {
+        flex-direction: column; /* Stack columns on small screens */
+        text-align: center;
+    }
+
+    .text-container, .image-container {
+        max-width: 100%;
+    }
+}
