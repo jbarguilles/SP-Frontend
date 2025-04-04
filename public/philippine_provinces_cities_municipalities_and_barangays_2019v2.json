@@ -42616,7 +42616,7 @@
     }
   },
   "Barmm": {
-    "Region_Name": "Barmm",
+    "Region_Name": "BARMM",
     "Province_List": {
       "Basilan": {
         "Municipality_List": {
@@ -45692,7 +45692,7 @@
     }
   },
   "Car": {
-    "Region_Name": "Car",
+    "Region_Name": "CAR",
     "Province_List": {
       "Abra": {
         "Municipality_List": {
