@@ -43,23 +43,23 @@ const formSchema = z.object({
 
 export function PatientRecordForm() {
   const [formData, setFormData] = useState({
-    firstname: "",
-    middlename: "",
-    lastname: "",
-    suffix: "",
+    firstname: "Juan",
+    middlename: "Santos",
+    lastname: "Dela Cruz",
+    suffix: "Jr",
     sex: "Male",
     civilstatus: "Single",
-    birthdate: "",
-    age: 0,
-    houseStreetSubdivision: "",
-    barangay: "",
-    city: "",
-    province: "",
-    region: "",
-    cellphone: "",
-    emergencyContact: "",
-    emergencyNumber: "",
-    relationship: "",
+    birthdate: "1990-01-01",
+    age: 33,
+    houseStreetSubdivision: "123 Main Street, Green Village",
+    barangay: "San Antonio",
+    city: "Makati",
+    province: "Metro Manila",
+    region: "NCR",
+    cellphone: "+63 912 345 6789",
+    emergencyContact: "Maria Dela Cruz",
+    emergencyNumber: "+63 998 765 4321",
+    relationship: "Mother"
   });
 
   const [currentStep, setCurrentStep] = useState(1);
