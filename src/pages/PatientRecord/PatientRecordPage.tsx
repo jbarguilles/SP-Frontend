@@ -106,7 +106,79 @@ export function PatientRecordForm() {
       socialHistory: ""
     },
     problemListData: {
-      problems: []
+      attending_clinician: "",
+      management_of_periodontal_disease: false,
+      od_class_i: false,
+      od_class_i_toothnum: "",
+      od_class_ii: false,
+      od_class_ii_toothnum: "",
+      od_class_iii: false,
+      od_class_iii_toothnum: "",
+      od_class_iv: false,
+      od_class_iv_toothnum: "",
+      od_class_v: false,
+      od_class_v_toothnum: "",
+      od_onlay: false,
+      od_onlay_toothnum: "",
+      
+      // Adding missing fields from ProblemListData interface
+      et_pulp_sedation: false,
+      et_recementation_of_crowns: false, 
+      et_temporary_fillings: false,
+      et_management_of_acute_infections: false,
+      et_management_of_traumatic_injuries: false,
+      
+      fpd_laminates_veneers: false,
+      fpd_laminates_veneers_tooth_number: "",
+      fpd_single_crown: false,
+      fpd_single_crown_tooth_number: "",
+      fpd_bridge: false,
+      fpd_bridge_tooth_number: "",
+      
+      endodontics_anterior: false,
+      endodontics_anterior_tooth_number: "",
+      endodontics_posterior: false,
+      endodontics_posterior_tooth_number: "",
+      endodontics_others: false,
+      endodontics_others_tooth_number: "",
+      endodontics_others_specify: "",
+      
+      p_complete_denture: false,
+      p_single_denture: false,
+      p_removable_partial_denture: false,
+      p_other_denture_services: false,
+      
+      // Keeping existing fields
+      rpd_maxillary: false,
+      rpd_mandibular: false,
+      cd_maxillary: false,
+      cd_mandibular: false,
+      extraction: false,
+      extraction_toothnum: "",
+      surgery_extraction: false,
+      surgery_extraction_toothnum: "",
+      surgery_odontectomy: false,
+      surgery_odontectomy_toothnum: "",
+      surgery_special_case: false,
+      surgery_special_case_toothnum: "",
+      surgery_pedodontics: false,
+      surgery_pedodontics_toothnum: "",
+      surgery_orthodontics: false,
+      surgery_orthodontics_toothnum: "",
+      endodontic_treatment: false,
+      endodontic_treatment_toothnum: "",
+      crown_bridge: false,
+      crown_bridge_toothnum: "",
+      orthodontic_treatment: false,
+      orthodontic_treatment_desc: "",
+      periodontal_treatment: false,
+      periodontal_treatment_desc: "",
+      pedodontic_treatment: false,
+      pedodontic_treatment_desc: "",
+      full_mouth_rehabilitation: false,
+      dental_implants: false,
+      others: false,
+      others_desc: ""
     }
   });
 
@@ -133,6 +205,17 @@ export function PatientRecordForm() {
       [section]: {
         ...prev[section as keyof typeof prev],
         [name]: value
+      }
+    }));
+  };
+
+  // Update handleChange for ProblemList to support both string and boolean values
+  const handleProblemListChange = (field: string, value: string | boolean) => {
+    setFormData(prev => ({
+      ...prev,
+      problemListData: {
+        ...prev.problemListData,
+        [field]: value
       }
     }));
   };
@@ -199,7 +282,7 @@ export function PatientRecordForm() {
       case 7:
         return <ProblemList 
           formData={formData.problemListData} 
-          handleChange={(e) => handleChange(e, 'problemListData')} 
+          handleChange={handleProblemListChange} 
         />;
       default:
         return null;
