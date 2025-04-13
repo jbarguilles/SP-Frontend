@@ -62,6 +62,29 @@ export function PatientRecordForm() {
       emergencyNumber: "+63 998 765 4321",
       relationship: "Mother"
     },
+    dentalStatusData: {
+      teethNotes: ""
+    },
+    softTissueData: {
+      lips: "",
+      gingiva: "",
+      tongue: "",
+      oralMucosa: ""
+    },
+    radiographicData: {
+      radiographicFindings: ""
+    },
+    physicalAssessmentData: {
+      gait: "",
+      appearance: "",
+      defects: "",
+      weight: "",
+      height: "",
+      bloodPressure: "",
+      pulseRate: "",
+      temperature: "",
+      respiratoryRate: ""
+    },
     patientInterviewData: {
       chiefComplaintAndHistory: "",
       lastDentalVisit: "",
@@ -81,6 +104,9 @@ export function PatientRecordForm() {
       childhoodDiseases: "",
       medicalUpdate: "",
       socialHistory: ""
+    },
+    problemListData: {
+      problems: []
     }
   });
 
@@ -97,19 +123,19 @@ export function PatientRecordForm() {
     7: "Problem List"
   };
 
-  type FormDataSections = 'patientInformationData' | 'patientInterviewData';
-  
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>, section?: FormDataSections) => {
-      const { name, value } = e.target;
-      const sectionKey = section || 'patientInformationData';
-      setFormData(prev => ({
-        ...prev,
-        [sectionKey]: {
-          ...prev[sectionKey],
-          [name]: value
-        }
-      }));
-    };
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>, 
+    section: string
+  ) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [section]: {
+        ...prev[section as keyof typeof prev],
+        [name]: value
+      }
+    }));
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -143,15 +169,38 @@ export function PatientRecordForm() {
           handleChange={(e) => handleChange(e, 'patientInterviewData')} 
         />;
       case 3:
-        return <PhysicalAssessment formData={formData} handleChange={handleChange} />;
+        return <PhysicalAssessment 
+          formData={formData.physicalAssessmentData} 
+          handleChange={(field, value) => {
+            setFormData(prev => ({
+              ...prev,
+              physicalAssessmentData: {
+                ...prev.physicalAssessmentData,
+                [field]: value
+              }
+            }));
+          }} 
+        />;
       case 4:
-        return <SoftTissueExamination formData={formData} handleChange={handleChange} />;
+        return <SoftTissueExamination 
+          formData={formData.softTissueData} 
+          handleChange={(e) => handleChange(e, 'softTissueData')} 
+        />;
       case 5:
-        return <DentalStatusCharting formData={formData} handleChange={handleChange} />;
+        return <DentalStatusCharting 
+          formData={formData.dentalStatusData} 
+          handleChange={(e) => handleChange(e, 'dentalStatusData')} 
+        />;
       case 6:
-        return <RadiographicExamination formData={formData} handleChange={handleChange} />;
+        return <RadiographicExamination 
+          formData={formData.radiographicData} 
+          handleChange={(e) => handleChange(e, 'radiographicData')} 
+        />;
       case 7:
-        return <ProblemList formData={formData} handleChange={handleChange} />;
+        return <ProblemList 
+          formData={formData.problemListData} 
+          handleChange={(e) => handleChange(e, 'problemListData')} 
+        />;
       default:
         return null;
     }
