@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { z } from "zod";
 import { RegionData, PhilippinesData, ProvinceData, MunicipalityList } from '../../types/location';
 import philippineLocations from '../../data/ph.json';
+import { fillPatientRegistrationForm } from '../../utils/testUtils'; //test this using window.fillPatientRegistrationForm()
+import { TestButton } from '../../components/TestButton';
 
 // Define the form schema with zod
 const formSchema = z.object({
@@ -63,6 +65,11 @@ export function ProfileForm() {
     emergencyNumber: "",
     relationship: "",
   });
+  
+  const [formattedDate, setFormattedDate] = useState<string>("");
+
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [patientId, setPatientId] = useState("");
 
   const regionOrder = ["NCR", "CAR", "01", "02", "03", "4A", "4B", "05", "06", "07", "08", "09", "10", "11", "12", "13", "BARMM"]; // in the order you want
   const [regions] = useState<PhilippinesData>(phData);
@@ -76,6 +83,14 @@ export function ProfileForm() {
       const today = new Date();
       const age = today.getFullYear() - birthDate.getFullYear();
       const monthDifference = today.getMonth() - birthDate.getMonth();
+
+      // Format the date
+      const formatted = birthDate.toLocaleDateString('en-US', {
+        month: 'long',
+        day: 'numeric',
+        year: 'numeric'
+      });
+      setFormattedDate(formatted);
 
       // If the current month is before the birth month or the current day is before the birth day, subtract 1 from the age
       if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDate.getDate())) {
@@ -91,6 +106,11 @@ export function ProfileForm() {
       }
     }
   }, [formData.birthdate]); // This hook runs every time the birthdate changes
+
+  useEffect(() => {
+    // Ensure the function is available globally
+    window.fillPatientRegistrationForm = fillPatientRegistrationForm;
+  }, []);
 
   const [errors, setErrors] = useState<any>({});
 
@@ -137,7 +157,10 @@ export function ProfileForm() {
     try {
       formSchema.parse(formData); // Will throw if invalid
       setErrors({});
-      // Handle form submission
+      // Generate a random patient ID (you might want to replace this with your actual ID generation logic)
+      const generatedId = `PAT-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
+      setPatientId(generatedId);
+      setShowSuccessModal(true);
       console.log("Form submitted successfully:", formData);
     } catch (err) {
       if (err instanceof z.ZodError) {
@@ -152,6 +175,40 @@ export function ProfileForm() {
 
   return (
     <div className="flex justify-center items-center min-h-screen py-10">
+      <TestButton />
+      {showSuccessModal && (
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white p-8 rounded-lg shadow-xl max-w-md w-full">
+            <div className="flex flex-col items-center">
+              <div className="mb-4 bg-green-100 p-3 rounded-full">
+                <svg
+                  className="w-12 h-12 text-green-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+              </div>
+              <h2 className="text-2xl font-bold mb-4 text-green-600">Registration Successful!</h2>
+              <p className="text-gray-600 mb-4">Your patient ID is:</p>
+              <p className="text-xl font-bold text-gray-800 mb-6">{patientId}</p>
+              <button
+                onClick={() => setShowSuccessModal(false)}
+                className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      
       <div className="w-[60%] bg-white p-6 rounded-lg shadow-2xl">
         <h1 className="text-3xl font-bold mb-6 text-red-900">Patient Registration</h1>
 
@@ -213,6 +270,21 @@ export function ProfileForm() {
               />
             </div>
 
+            <div className="mb-4">
+              <label htmlFor="cellphone" className="block text-base font-medium">
+                Cellphone Number
+              </label>
+              <input
+                type="text"
+                name="cellphone"
+                value={formData.cellphone}
+                onChange={handleChange}
+                placeholder="09XXXXXXXXX"
+                className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-900 focus:border-red-900"
+              />
+              {errors.cellphone && <p className="text-red-500">{errors.cellphone}</p>}
+            </div>
+
             <div className="mb-4 flex gap-4">
               <div className="w-1/2">
                 <label htmlFor="sex" className="block text-base font-medium">
@@ -259,6 +331,9 @@ export function ProfileForm() {
                   onChange={handleChange}
                   className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-900 focus:border-red-900"
                 />
+                {formattedDate && (
+                  <p className="mt-1 text-sm text-gray-600">{formattedDate}</p>
+                )}
               </div>
 
               <div className="w-1/2">
