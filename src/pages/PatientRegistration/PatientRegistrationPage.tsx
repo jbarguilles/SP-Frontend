@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { z } from "zod";
+import { RegionData, PhilippinesData, ProvinceData, MunicipalityList } from '../../types/location';
+import philippineLocations from '../../data/ph.json';
 
 // Define the form schema with zod
 const formSchema = z.object({
@@ -22,6 +24,25 @@ const formSchema = z.object({
   relationship: z.string(),
 });
 
+const phData:PhilippinesData = philippineLocations;
+
+const toTitleCase = (str: string) => {
+  const lowercaseWords = ['na', 'of', 'and', 'the', 'in', 'on', 'at', 'to'];
+  // Split by whitespace and handle each word
+  return str.toLowerCase().split(' ').map((word, index) => {
+    // Check if word is a Roman numeral
+    if (/^[IVXLCDM]+$/i.test(word)) {
+      return word.toUpperCase();
+    }
+    // Keep lowercase for specified words unless it's the first word
+    if (index !== 0 && lowercaseWords.includes(word.toLowerCase())) {
+      return word.toLowerCase();
+    }
+    // Capitalize first letter of other words
+    return word.charAt(0).toUpperCase() + word.slice(1);
+  }).join(' ');
+};
+
 export function ProfileForm() {
   const [formData, setFormData] = useState({
     firstname: "",
@@ -42,7 +63,13 @@ export function ProfileForm() {
     emergencyNumber: "",
     relationship: "",
   });
-  
+
+  const regionOrder = ["NCR", "CAR", "01", "02", "03", "4A", "4B", "05", "06", "07", "08", "09", "10", "11", "12", "13", "BARMM"]; // in the order you want
+  const [regions] = useState<PhilippinesData>(phData);
+  const [provinces, setProvinces] = useState<Record<string, ProvinceData>>({});
+  const [municipalities, setMunicipalities] = useState<MunicipalityList>({});
+  const [barangays, setBarangays] = useState<string[]>([]);
+
   useEffect(() => {
     if (formData.birthdate) {
       const birthDate = new Date(formData.birthdate);
@@ -83,9 +110,30 @@ export function ProfileForm() {
     }));
   };
 
+  const handleRegionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedRegion = regions[e.target.value];
+    setProvinces(selectedRegion?.province_list || {});
+    setMunicipalities({});
+    setBarangays([]);
+    handleSelectChange(e);
+  };
+
+  const handleProvinceChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedProvince = provinces[e.target.value];
+    setMunicipalities(selectedProvince?.municipality_list || {});
+    setBarangays([]);
+    handleSelectChange(e);
+  };
+
+  const handleCityChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedMunicipality = municipalities[e.target.value];
+    setBarangays(selectedMunicipality?.barangay_list || []);
+    handleSelectChange(e);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
       formSchema.parse(formData); // Will throw if invalid
       setErrors({});
@@ -121,7 +169,7 @@ export function ProfileForm() {
                 name="firstname"
                 value={formData.firstname}
                 onChange={handleChange}
-                className="w-full p-2 border border-gray-400 rounded-lg "
+                className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-900 focus:border-red-900"
               />
               {errors.firstname && <p className="text-red-500">{errors.firstname}</p>}
             </div>
@@ -135,7 +183,7 @@ export function ProfileForm() {
                 name="middlename"
                 value={formData.middlename}
                 onChange={handleChange}
-                className="w-full p-2 border border-gray-400 rounded-lg"
+                className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-900 focus:border-red-900"
               />
             </div>
 
@@ -148,7 +196,7 @@ export function ProfileForm() {
                 name="lastname"
                 value={formData.lastname}
                 onChange={handleChange}
-                className="w-full p-2 border border-gray-400 rounded-lg"
+                className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-900 focus:border-red-900"
               />
             </div>
 
@@ -161,7 +209,7 @@ export function ProfileForm() {
                 name="suffix"
                 value={formData.suffix}
                 onChange={handleChange}
-                className="w-full p-2 border border-gray-400 rounded-lg"
+                className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-900 focus:border-red-900"
               />
             </div>
 
@@ -174,7 +222,7 @@ export function ProfileForm() {
                   name="sex"
                   value={formData.sex}
                   onChange={handleSelectChange}
-                  className="w-full p-2 border border-gray-400 rounded-lg"
+                  className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-900 focus:border-red-900"
                 >
                   <option value="Male">Male</option>
                   <option value="Female">Female</option>
@@ -189,7 +237,7 @@ export function ProfileForm() {
                   name="civilstatus"
                   value={formData.civilstatus}
                   onChange={handleSelectChange}
-                  className="w-full p-2 border border-gray-400 rounded-lg"
+                  className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-900 focus:border-red-900"
                 >
                   <option value="Single">Single</option>
                   <option value="Married">Married</option>
@@ -209,7 +257,7 @@ export function ProfileForm() {
                   name="birthdate"
                   value={formData.birthdate}
                   onChange={handleChange}
-                  className="w-full p-2 border border-gray-400 rounded-lg"
+                  className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-900 focus:border-red-900"
                 />
               </div>
 
@@ -222,7 +270,7 @@ export function ProfileForm() {
                   name="age"
                   value={formData.age}
                   onChange={handleChange}
-                  className="w-full p-2 border border-gray-400 rounded-lg cursor-auto"
+                  className="w-full p-2 border border-gray-300 rounded-lg cursor-auto focus:outline-none focus:ring-2 focus:ring-red-900 focus:border-red-900"
                   readOnly
                 />
               </div>
@@ -242,46 +290,7 @@ export function ProfileForm() {
                 name="houseStreetSubdivision"
                 value={formData.houseStreetSubdivision}
                 onChange={handleChange}
-                className="w-full p-2 border border-gray-400 rounded-lg"
-              />
-            </div>
-
-            <div className="mb-4">
-              <label htmlFor="barangay" className="block text-base font-medium">
-                Barangay
-              </label>
-              <input
-                type="text"
-                name="barangay"
-                value={formData.barangay}
-                onChange={handleChange}
-                className="w-full p-2 border border-gray-400 rounded-lg"
-              />
-            </div>
-
-            <div className="mb-4">
-              <label htmlFor="city" className="block text-base font-medium">
-                City
-              </label>
-              <input
-                type="text"
-                name="city"
-                value={formData.city}
-                onChange={handleChange}
-                className="w-full p-2 border border-gray-400 rounded-lg"
-              />
-            </div>
-
-            <div className="mb-4">
-              <label htmlFor="province" className="block text-base font-medium">
-                Province
-              </label>
-              <input
-                type="text"
-                name="province"
-                value={formData.province}
-                onChange={handleChange}
-                className="w-full p-2 border border-gray-400 rounded-lg"
+                className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-900 focus:border-red-900"
               />
             </div>
 
@@ -289,13 +298,73 @@ export function ProfileForm() {
               <label htmlFor="region" className="block text-base font-medium">
                 Region
               </label>
-              <input
-                type="text"
+              <select
                 name="region"
                 value={formData.region}
-                onChange={handleChange}
-                className="w-full p-2 border border-gray-400 rounded-lg"
-              />
+                onChange={handleRegionChange}
+                className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-900 focus:border-red-900"
+              >
+                <option value="">Select Region</option>
+                {regionOrder.map((key) => (
+                  <option key={key} value={key}>{regions[key].region_name}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="mb-4">
+              <label htmlFor="province" className="block text-base font-medium">
+                Province
+              </label>
+              <select
+                name="province"
+                value={formData.province}
+                onChange={handleProvinceChange}
+                className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-900 focus:border-red-900"
+                disabled={!formData.region}
+              >
+                <option value="">Select Province</option>
+                {Object.keys(provinces).map(province => (
+                  <option key={province} value={province}>{toTitleCase(province)}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="mb-4">
+              <label htmlFor="city" className="block text-base font-medium">
+                City/Municipality
+              </label>
+              <select
+                name="city"
+                value={formData.city}
+                onChange={handleCityChange}
+                className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-900 focus:border-red-900"
+                disabled={!formData.province}
+              >
+                <option value="">Select City/Municipality</option>
+                {Object.keys(municipalities).map(municipality => (
+                  <option key={municipality} value={municipality}>
+                    {toTitleCase(municipality)}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="mb-4">
+              <label htmlFor="barangay" className="block text-base font-medium">
+                Barangay
+              </label>
+              <select
+                name="barangay"
+                value={formData.barangay}
+                onChange={handleSelectChange}
+                className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-900 focus:border-red-900"
+                disabled={!formData.city}
+              >
+                <option value="">Select Barangay</option>
+                {barangays.map(barangay => (
+                  <option key={barangay} value={barangay}>{toTitleCase(barangay)}</option>
+                ))}
+              </select>
             </div>
           </fieldset>
 
@@ -312,7 +381,7 @@ export function ProfileForm() {
                 name="emergencyContact"
                 value={formData.emergencyContact}
                 onChange={handleChange}
-                className="w-full p-2 border border-gray-400 rounded-lg"
+                className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-900 focus:border-red-900"
               />
             </div>
 
@@ -325,7 +394,7 @@ export function ProfileForm() {
                 name="emergencyNumber"
                 value={formData.emergencyNumber}
                 onChange={handleChange}
-                className="w-full p-2 border border-gray-400 rounded-lg"
+                className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-900 focus:border-red-900"
               />
             </div>
 
@@ -338,12 +407,15 @@ export function ProfileForm() {
                 name="relationship"
                 value={formData.relationship}
                 onChange={handleChange}
-                className="w-full p-2 border border-gray-400 rounded-lg"
+                className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-900 focus:border-red-900"
               />
             </div>
           </fieldset>
 
-          <button type="submit" className="w-full p-2 bg-blue-500 text-white rounded-lg">
+          <button 
+            type="submit" 
+            className="w-full p-2 bg-red-900 text-white rounded-lg hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-red-900 focus:ring-offset-2 transition-colors duration-200"
+          >
             Submit
           </button>
         </form>
