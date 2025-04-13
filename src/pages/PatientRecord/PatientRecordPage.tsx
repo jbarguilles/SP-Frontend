@@ -9,36 +9,148 @@ import RadiographicExamination from './components/RadiographicExamination';
 import ProblemList from './components/ProblemList';
 
 const formSchema = z.object({
-  // Patient Information (will be pre-filled from registration)
-  patientId: z.string(),
-  
-  // Patient Interview
-  chiefComplaint: z.string(),
-  presentIllness: z.string(),
-  pastMedicalHistory: z.string(),
-  medications: z.string(),
-  allergies: z.string(),
-  familyHistory: z.string(),
-  
-  // Physical Assessment
-  bloodPressure: z.string(),
-  pulseRate: z.string(),
-  temperature: z.string(),
-  
-  // Soft Tissue Examination
-  lips: z.string(),
-  gingiva: z.string(),
-  tongue: z.string(),
-  oralMucosa: z.string(),
-  
-  // Dental Status
-  teethNotes: z.string(),
-  
-  // Radiographic Exam
-  radiographicFindings: z.string(),
-  
-  // Problem List
-  problems: z.array(z.string())
+  patientInformationData: z.object({
+    firstname: z.string(),
+    middlename: z.string(),
+    lastname: z.string(),
+    suffix: z.string(),
+    sex: z.string(),
+    civilstatus: z.string(),
+    birthdate: z.string(),
+    age: z.number(),
+    houseStreetSubdivision: z.string(),
+    barangay: z.string(),
+    city: z.string(),
+    province: z.string(),
+    region: z.string(),
+    cellphone: z.string(),
+    emergencyContact: z.string(),
+    emergencyNumber: z.string(),
+    relationship: z.string()
+  }),
+
+  patientInterviewData: z.object({
+    chiefComplaintAndHistory: z.string(),
+    lastDentalVisit: z.string(),
+    dentalVisitFrequency: z.string(),
+    lastVisitProcedures: z.string(),
+    anesthesiaResponse: z.string(),
+    dentalComplications: z.string(),
+    underPhysicianCare: z.string(),
+    physicianName: z.string(),
+    physicianPhone: z.string(),
+    everHospitalized: z.string(),
+    hospitalizationDate: z.string(),
+    hospitalizationReason: z.string(),
+    allergies: z.string(),
+    illnesses: z.string(),
+    medications: z.string(),
+    childhoodDiseases: z.string(),
+    medicalUpdate: z.string(),
+    socialHistory: z.string()
+  }),
+
+  physicalAssessmentData: z.object({
+    gait: z.string(),
+    appearance: z.string(),
+    defects: z.string(),
+    weight: z.string(),
+    height: z.string(),
+    bloodPressure: z.string(),
+    pulseRate: z.string(),
+    temperature: z.string(),
+    respiratoryRate: z.string()
+  }),
+
+  softTissueData: z.object({
+    lips: z.string(),
+    gingiva: z.string(),
+    tongue: z.string(),
+    oralMucosa: z.string()
+  }),
+
+  dentalStatusData: z.object({
+    teethNotes: z.string()
+  }),
+
+  radiographicData: z.object({
+    entries: z.array(z.object({
+      id: z.string(),
+      radiographType: z.string(),
+      findings: z.string(),
+      images: z.array(z.instanceof(File))
+    })),
+    radiographicFindings: z.string()
+  }),
+
+  problemListData: z.object({
+    attending_clinician: z.string(),
+    management_of_periodontal_disease: z.boolean(),
+    od_class_i: z.boolean(),
+    od_class_i_toothnum: z.string(),
+    od_class_ii: z.boolean(),
+    od_class_ii_toothnum: z.string(),
+    od_class_iii: z.boolean(),
+    od_class_iii_toothnum: z.string(),
+    od_class_iv: z.boolean(),
+    od_class_iv_toothnum: z.string(),
+    od_class_v: z.boolean(),
+    od_class_v_toothnum: z.string(),
+    od_onlay: z.boolean(),
+    od_onlay_toothnum: z.string(),
+    et_pulp_sedation: z.boolean(),
+    et_recementation_of_crowns: z.boolean(),
+    et_temporary_fillings: z.boolean(),
+    et_management_of_acute_infections: z.boolean(),
+    et_management_of_traumatic_injuries: z.boolean(),
+    fpd_laminates_veneers: z.boolean(),
+    fpd_laminates_veneers_tooth_number: z.string(),
+    fpd_single_crown: z.boolean(),
+    fpd_single_crown_tooth_number: z.string(),
+    fpd_bridge: z.boolean(),
+    fpd_bridge_tooth_number: z.string(),
+    endodontics_anterior: z.boolean(),
+    endodontics_anterior_tooth_number: z.string(),
+    endodontics_posterior: z.boolean(),
+    endodontics_posterior_tooth_number: z.string(),
+    endodontics_others: z.boolean(),
+    endodontics_others_tooth_number: z.string(),
+    endodontics_others_specify: z.string(),
+    p_complete_denture: z.boolean(),
+    p_single_denture: z.boolean(),
+    p_removable_partial_denture: z.boolean(),
+    p_other_denture_services: z.boolean(),
+    rpd_maxillary: z.boolean(),
+    rpd_mandibular: z.boolean(),
+    cd_maxillary: z.boolean(),
+    cd_mandibular: z.boolean(),
+    extraction: z.boolean(),
+    extraction_toothnum: z.string(),
+    surgery_extraction: z.boolean(),
+    surgery_extraction_toothnum: z.string(),
+    surgery_odontectomy: z.boolean(),
+    surgery_odontectomy_toothnum: z.string(),
+    surgery_special_case: z.boolean(),
+    surgery_special_case_toothnum: z.string(),
+    surgery_pedodontics: z.boolean(),
+    surgery_pedodontics_toothnum: z.string(),
+    surgery_orthodontics: z.boolean(),
+    surgery_orthodontics_toothnum: z.string(),
+    endodontic_treatment: z.boolean(),
+    endodontic_treatment_toothnum: z.string(),
+    crown_bridge: z.boolean(),
+    crown_bridge_toothnum: z.string(),
+    orthodontic_treatment: z.boolean(),
+    orthodontic_treatment_desc: z.string(),
+    periodontal_treatment: z.boolean(),
+    periodontal_treatment_desc: z.string(),
+    pedodontic_treatment: z.boolean(),
+    pedodontic_treatment_desc: z.string(),
+    full_mouth_rehabilitation: z.boolean(),
+    dental_implants: z.boolean(),
+    others: z.boolean(),
+    others_desc: z.string()
+  })
 });
 
 export function PatientRecordForm() {
@@ -72,6 +184,12 @@ export function PatientRecordForm() {
       oralMucosa: ""
     },
     radiographicData: {
+      entries: [{  // Initialize with one entry
+        id: Date.now().toString(),
+        radiographType: '',
+        findings: '',
+        images: []
+      }],
       radiographicFindings: ""
     },
     physicalAssessmentData: {
@@ -195,21 +313,60 @@ export function PatientRecordForm() {
     7: "Problem List"
   };
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>, 
-    section: string
-  ) => {
+  // Separate handle change functions for each section
+  const handlePatientInterviewChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [section]: {
-        ...prev[section as keyof typeof prev],
+      patientInterviewData: {
+        ...prev.patientInterviewData,
         [name]: value
       }
     }));
   };
 
-  // Update handleChange for ProblemList to support both string and boolean values
+  const handlePhysicalAssessmentChange = (field: string, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      physicalAssessmentData: {
+        ...prev.physicalAssessmentData,
+        [field]: value
+      }
+    }));
+  };
+
+  const handleSoftTissueChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      softTissueData: {
+        ...prev.softTissueData,
+        [name]: value
+      }
+    }));
+  };
+
+  const handleDentalStatusChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      dentalStatusData: {
+        ...prev.dentalStatusData,
+        [name]: value
+      }
+    }));
+  };
+
+  const handleRadiographicChange = (field: string, value: any) => {
+    setFormData(prev => ({
+      ...prev,
+      radiographicData: {
+        ...prev.radiographicData,
+        [field]: value
+      }
+    }));
+  };
+
   const handleProblemListChange = (field: string, value: string | boolean) => {
     setFormData(prev => ({
       ...prev,
@@ -249,35 +406,26 @@ export function PatientRecordForm() {
       case 2:
         return <PatientInterview 
           formData={formData.patientInterviewData} 
-          handleChange={(e) => handleChange(e, 'patientInterviewData')} 
+          handleChange={handlePatientInterviewChange} 
         />;
       case 3:
         return <PhysicalAssessment 
           formData={formData.physicalAssessmentData} 
-          handleChange={(field, value) => {
-            setFormData(prev => ({
-              ...prev,
-              physicalAssessmentData: {
-                ...prev.physicalAssessmentData,
-                [field]: value
-              }
-            }));
-          }} 
+          handleChange={handlePhysicalAssessmentChange} 
         />;
       case 4:
         return <SoftTissueExamination 
           formData={formData.softTissueData} 
-          handleChange={(e) => handleChange(e, 'softTissueData')} 
+          handleChange={handleSoftTissueChange} 
         />;
       case 5:
         return <DentalStatusCharting 
           formData={formData.dentalStatusData} 
-          handleChange={(e) => handleChange(e, 'dentalStatusData')} 
-        />;
+          handleChange={handleDentalStatusChange} />;
       case 6:
         return <RadiographicExamination 
           formData={formData.radiographicData} 
-          handleChange={(e) => handleChange(e, 'radiographicData')} 
+          handleChange={handleRadiographicChange}
         />;
       case 7:
         return <ProblemList 
