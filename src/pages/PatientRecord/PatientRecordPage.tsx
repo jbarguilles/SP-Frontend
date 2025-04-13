@@ -43,23 +43,45 @@ const formSchema = z.object({
 
 export function PatientRecordForm() {
   const [formData, setFormData] = useState({
-    firstname: "Juan",
-    middlename: "Santos",
-    lastname: "Dela Cruz",
-    suffix: "Jr",
-    sex: "Male",
-    civilstatus: "Single",
-    birthdate: "1990-01-01",
-    age: 33,
-    houseStreetSubdivision: "123 Main Street, Green Village",
-    barangay: "San Antonio",
-    city: "Makati",
-    province: "Metro Manila",
-    region: "NCR",
-    cellphone: "+63 912 345 6789",
-    emergencyContact: "Maria Dela Cruz",
-    emergencyNumber: "+63 998 765 4321",
-    relationship: "Mother"
+    patientInformationData: {
+      firstname: "Juan",
+      middlename: "Santos",
+      lastname: "Dela Cruz",
+      suffix: "Jr",
+      sex: "Male",
+      civilstatus: "Single",
+      birthdate: "1990-01-01",
+      age: 33,
+      houseStreetSubdivision: "123 Main Street, Green Village",
+      barangay: "San Antonio",
+      city: "Makati",
+      province: "Metro Manila",
+      region: "NCR",
+      cellphone: "+63 912 345 6789",
+      emergencyContact: "Maria Dela Cruz",
+      emergencyNumber: "+63 998 765 4321",
+      relationship: "Mother"
+    },
+    patientInterviewData: {
+      chiefComplaintAndHistory: "",
+      lastDentalVisit: "",
+      dentalVisitFrequency: "",
+      lastVisitProcedures: "",
+      anesthesiaResponse: "",
+      dentalComplications: "",
+      underPhysicianCare: "",
+      physicianName: "",
+      physicianPhone: "",
+      everHospitalized: "",
+      hospitalizationDate: "",
+      hospitalizationReason: "",
+      allergies: "",
+      illnesses: "",
+      medications: "",
+      childhoodDiseases: "",
+      medicalUpdate: "",
+      socialHistory: ""
+    }
   });
 
   const [currentStep, setCurrentStep] = useState(1);
@@ -75,13 +97,19 @@ export function PatientRecordForm() {
     7: "Problem List"
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
+  type FormDataSections = 'patientInformationData' | 'patientInterviewData';
+  
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>, section?: FormDataSections) => {
+      const { name, value } = e.target;
+      const sectionKey = section || 'patientInformationData';
+      setFormData(prev => ({
+        ...prev,
+        [sectionKey]: {
+          ...prev[sectionKey],
+          [name]: value
+        }
+      }));
+    };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -108,9 +136,12 @@ export function PatientRecordForm() {
   const renderStep = () => {
     switch (currentStep) {
       case 1:
-        return <PatientInformation patientData={formData} />;
+        return <PatientInformation formData={formData} />;
       case 2:
-        return <PatientInterview formData={formData} handleChange={handleChange} />;
+        return <PatientInterview 
+          formData={formData.patientInterviewData} 
+          handleChange={(e) => handleChange(e, 'patientInterviewData')} 
+        />;
       case 3:
         return <PhysicalAssessment formData={formData} handleChange={handleChange} />;
       case 4:
@@ -163,7 +194,7 @@ export function PatientRecordForm() {
             <button
               type="button"
               onClick={prevStep}
-              className={`px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 ${
+              className={`px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 cursor-pointer ${
                 currentStep === 1 ? 'opacity-50 cursor-not-allowed' : ''
               }`}
               disabled={currentStep === 1}
@@ -174,7 +205,7 @@ export function PatientRecordForm() {
             {currentStep === totalSteps ? (
               <button
                 type="submit"
-                className="px-4 py-2 bg-red-900 text-white rounded-lg hover:bg-red-800"
+                className="px-4 py-2 bg-red-900 text-white rounded-lg hover:bg-red-800 cursor-pointer"
               >
                 Submit
               </button>
@@ -182,7 +213,7 @@ export function PatientRecordForm() {
               <button
                 type="button"
                 onClick={nextStep}
-                className="px-4 py-2 bg-red-900 text-white rounded-lg hover:bg-red-800"
+                className="px-4 py-2 bg-red-900 text-white rounded-lg hover:bg-red-800 cursor-pointer"
               >
                 Next
               </button>
