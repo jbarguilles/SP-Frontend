@@ -1,8 +1,6 @@
 import './Chart.css';
 import Popup from './components/Popup';
 import { useState, useEffect, useRef } from 'react';
-import { useLocation } from 'react-router-dom';
-
 import teeth18 from './teeth-image/18.png';
 import teeth17 from './teeth-image/17.png';
 import teeth16 from './teeth-image/16.png';
@@ -406,9 +404,20 @@ function TeethPopup({teethArray, setTeethArray, index, isTopTeeth, canvasRef}) {
   );
 }
 
-const ChartEdit = ({isChartDisabled}) => {
+function Chart(
+    {
+    treatmentPlanValuesArrayTop, setTreatmentPlanValuesArrayTop,
+    treatmentPlanValuesArrayBottom, setTreatmentPlanValuesArrayBottom,
+    lesionStatusValuesArrayTop, setLesionStatusValuesArrayTop,
+    lesionStatusValuesArrayBottom, setLesionStatusValuesArrayBottom,
+    icdasValuesArrayTop, setIcdasValuesArrayTop,
+    icdasValuesArrayBottom, setIcdasValuesArrayBottom,
+    existingConditionTop, setExistingConditionTop,
+    existingConditionBottom, setExistingConditionBottom,
+    upperTeeth, setUpperTeeth, lowerTeeth, setLowerTeeth
+    }
+  ){
   const [cookies, setCookie] = useCookies(['latest_patient_id']);
-  const latestPatientID = cookies.latest_patient_id;
   const treatmentPlans = [" ", "N", "T"];
   const lesionStatus = [" ", "+", "-"];
   const icdasCode = [" ", "0", "A", "B", "C"]; /* R for restoration */
@@ -417,126 +426,6 @@ const ChartEdit = ({isChartDisabled}) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const [boxType, setBoxType] = useState("");
-
-  const location = useLocation();
-  const { initialData } = location.state || {};
-
-  const [chartData, setChartData] = useState({
-    treatmentPlanValues: initialData?.treatmentPlanValuesArrayTop + initialData?.treatmentPlanValuesArrayBottom || "",
-    lesionStatusValues: initialData?.lesionStatusValuesArrayTop + initialData?.lesionStatusValuesArrayBottom || "",
-    icdasCodeValues: initialData?.icdasValuesArrayTop + initialData?.icdasValuesArrayBottom || "",
-
-    teeth18Blob: new Blob(), teeth17Blob: new Blob(), teeth16Blob: new Blob(), teeth15Blob: new Blob(),
-    teeth14Blob: new Blob(), teeth13Blob: new Blob(), teeth12Blob: new Blob(), teeth11Blob: new Blob(),
-
-    teeth28Blob: new Blob(), teeth27Blob: new Blob(), teeth26Blob: new Blob(), teeth25Blob: new Blob(),
-    teeth24Blob: new Blob(), teeth23Blob: new Blob(), teeth22Blob: new Blob(), teeth21Blob: new Blob(),
-
-    teeth38Blob: new Blob(), teeth37Blob: new Blob(), teeth36Blob: new Blob(), teeth35Blob: new Blob(),
-    teeth34Blob: new Blob(), teeth33Blob: new Blob(), teeth32Blob: new Blob(), teeth31Blob: new Blob(),
-
-    teeth48Blob: new Blob(), teeth47Blob: new Blob(), teeth46Blob: new Blob(), teeth45Blob: new Blob(),
-    teeth44Blob: new Blob(), teeth43Blob: new Blob(), teeth42Blob: new Blob(), teeth41Blob: new Blob(),
-
-    //existing conditions
-    existingCondition18Blob: new Blob(), existingCondition17Blob: new Blob(), existingCondition16Blob: new Blob(), existingCondition15Blob: new Blob(),
-    existingCondition14Blob: new Blob(), existingCondition13Blob: new Blob(), existingCondition12Blob: new Blob(), existingCondition11Blob: new Blob(),
-    
-    existingCondition28Blob: new Blob(), existingCondition27Blob: new Blob(), existingCondition26Blob: new Blob(), existingCondition25Blob: new Blob(),
-    existingCondition24Blob: new Blob(), existingCondition23Blob: new Blob(), existingCondition22Blob: new Blob(), existingCondition21Blob: new Blob(),
-    
-    existingCondition38Blob: new Blob(), existingCondition37Blob: new Blob(), existingCondition36Blob: new Blob(), existingCondition35Blob: new Blob(),
-    existingCondition34Blob: new Blob(), existingCondition33Blob: new Blob(), existingCondition32Blob: new Blob(), existingCondition31Blob: new Blob(),
-    
-    existingCondition48Blob: new Blob(), existingCondition47Blob: new Blob(), existingCondition46Blob: new Blob(), existingCondition45Blob: new Blob(),
-    existingCondition44Blob: new Blob(), existingCondition43Blob: new Blob(), existingCondition42Blob: new Blob(), existingCondition41Blob: new Blob()
-  });
-  //
-  // let teethBlobArray = [];
-  // let existingConditionBlobArray = [];
-  const [teethBlobArray, setTeethBlobArray] = useState([]);
-  const [existingConditionBlobArray, setExistingConditionBlobArray] = useState([]);
-
-  const [treatmentPlanValuesArrayTop, setTreatmentPlanValuesArrayTop] = useState(initialData?.treatmentPlanValuesArrayTop ||
-    Array(16).fill({
-      top: 0,
-      right: 0,
-      bottom: 0,
-      left: 0,
-      center: 0
-    })
-  );
-
-  const [treatmentPlanValuesArrayBottom, setTreatmentPlanValuesArrayBottom] = useState(initialData?.treatmentPlanValuesArrayBottom ||
-    Array(16).fill({
-      top: 0,
-      right: 0,
-      bottom: 0,
-      left: 0,
-      center: 0
-    })
-  );
-
-  const [lesionStatusValuesArrayTop, setLesionStatusValuesArrayTop] = useState(initialData?.lesionStatusValuesArrayTop ||
-    Array(16).fill({
-      top: 0,
-      right: 0,
-      bottom: 0,
-      left: 0,
-      center: 0
-    })
-  );
-
-  const [lesionStatusValuesArrayBottom, setLesionStatusValuesArrayBottom] = useState(initialData?.lesionStatusValuesArrayBottom ||
-    Array(16).fill({
-      top: 0,
-      right: 0,
-      bottom: 0,
-      left: 0,
-      center: 0
-    })
-  );
-
-  const [icdasValuesArrayTop, setIcdasValuesArrayTop] = useState(initialData?.icdasValuesArrayTop ||
-    Array(16).fill({
-      top: 0,
-      right: 0,
-      bottom: 0,
-      left: 0,
-      center: 0
-    })
-  );
-
-  const [icdasValuesArrayBottom, setIcdasValuesArrayBottom] = useState(initialData?.icdasValuesArrayBottom ||
-    Array(16).fill({
-      top: 0,
-      right: 0,
-      bottom: 0,
-      left: 0,
-      center: 0
-    })
-  );
-
-
-  const [existingConditionTop , setExistingConditionTop] = useState(initialData?.existingConditionTop || [
-    ECBG, ECBG, ECBG, ECBG, ECBG, ECBG, ECBG, ECBG,
-    ECBG, ECBG, ECBG, ECBG, ECBG, ECBG, ECBG, ECBG
-  ]);
-
-  const [existingConditionBottom, setExistingConditionBottom] = useState(initialData?.existingConditionBottom || [
-    ECBG, ECBG, ECBG, ECBG, ECBG, ECBG, ECBG, ECBG,
-    ECBG, ECBG, ECBG, ECBG, ECBG, ECBG, ECBG, ECBG
-  ]);
-
-  const [upperTeeth, setUpperTeeth] = useState(initialData?.upperTeeth || [
-    teeth18, teeth17, teeth16, teeth15, teeth14, teeth13, teeth12, teeth11,
-    teeth21, teeth22, teeth23, teeth24, teeth25, teeth26, teeth27, teeth28
-  ]);
-
-  const [lowerTeeth, setLowerTeeth] = useState(initialData?.lowerTeeth || [
-    teeth48, teeth47, teeth46, teeth45, teeth44, teeth43, teeth42, teeth41,
-    teeth31, teeth32, teeth33, teeth34, teeth35, teeth36, teeth37, teeth38
-  ]);
 
   const canvasRefExistingCondition = useRef(null);
   const canvasRefTeeth = useRef(null);
@@ -561,216 +450,6 @@ const ChartEdit = ({isChartDisabled}) => {
     blobToDataURL(blob, function(dataurl) {
       //console.log("DATA URL NA GALING SA BLOB : "+dataurl); // Logs the DataURL of the blob
     });
-  };
-
-  const dataURLtoBlob = (dataUrl) => {
-    const byteString = atob(dataUrl.split(',')[1]);
-    const mimeString = dataUrl.split(',')[0].split(':')[1].split(';')[0];
-
-    const arrayBuffer = new ArrayBuffer(byteString.length);
-    const intArray = new Uint8Array(arrayBuffer);
-
-    for (let i = 0; i < byteString.length; i++) {
-      intArray[i] = byteString.charCodeAt(i);
-    }
-
-    return new Blob([intArray], { type: mimeString });
-  };
-
-  const imageUrlToBlob = async (imageUrl) => {
-    try {
-      const response = await fetch(imageUrl);
-      const blob = await response.blob();
-      return blob;
-    } catch (error) {
-      console.error('Error fetching image:', error);
-      throw error;
-    }
-  };
-
-  const convertTeethToBlob = async () => {
-    const teethArray = upperTeeth.concat(lowerTeeth);
-    // const teethBlobArray = [];
-
-    for (const item of teethArray) {
-      try {
-
-        let itemBlob;
-  
-        // Check if item is an image URL or a data URL
-        if (item.startsWith('data:')) {
-          // If it's a data URL
-          itemBlob = dataURLtoBlob(item);
-        } else {
-          // If it's a static image URL
-          itemBlob = await imageUrlToBlob(item);
-        }
-        
-        teethBlobArray.push(itemBlob);
-      } catch (error) {
-        console.error('Error converting image to Blob:', error);
-        // Handle error
-      }
-    }
-
-    setTeethBlobArray(teethBlobArray);
-
-  };
-
-  const convertExistingConditionsToBlob = async () => {
-    const existingConsitionsArray = existingConditionTop.concat(existingConditionBottom);
-    const ecBlobArray = [];
-
-    let itemBlob;
-    for (const item of existingConsitionsArray) {
-      try {
-
-        let itemBlob;
-  
-        // Check if item is an image URL or a data URL
-        if (item.startsWith('data:')) {
-          // If it's a data URL
-          itemBlob = dataURLtoBlob(item);
-        } else {
-          // If it's a static image URL
-          itemBlob = await imageUrlToBlob(item);
-        }
-        
-        existingConditionBlobArray.push(itemBlob);
-      } catch (error) {
-        console.error('Error converting image to Blob:', error);
-        // Handle error
-      }
-    }
-
-    setExistingConditionBlobArray(ecBlobArray);
-
-  };
-
-  
-  const handleSaveChart = async () => {
-
-    const treatmentValues = treatmentPlanValuesArrayTop.concat(treatmentPlanValuesArrayBottom);
-    const lesionStatuses = lesionStatusValuesArrayTop.concat(lesionStatusValuesArrayBottom);
-    const icdasCodes = icdasValuesArrayTop.concat(icdasValuesArrayBottom);
-
-    let compressedTreatmentValues = "";
-    let compressedLesionStatuses = "";
-    let compressedICDASCodes = "";
-    let patient = 32;
-
-    treatmentValues.forEach(obj => {
-      // Loop through each key of the object
-      Object.keys(obj).forEach(key => {
-        // Append the value of the current key to the result string
-        compressedTreatmentValues += treatmentPlans[obj[key]];
-      });
-    });
-
-    lesionStatuses.forEach(obj => {
-      // Loop through each key of the object
-      Object.keys(obj).forEach(key => {
-        // Append the value of the current key to the result string
-        compressedLesionStatuses += lesionStatus[obj[key]];
-      });
-    });
-
-    icdasCodes.forEach(obj => {
-      // Loop through each key of the object
-      Object.keys(obj).forEach(key => {
-        // Append the value of the current key to the result string
-        compressedICDASCodes += icdasCode[obj[key]];
-      });
-    });
-
-    await convertTeethToBlob();
-    await convertExistingConditionsToBlob();
-
-    console.log(teethBlobArray);
-
-    // console.log("Teeth: " + teethBlobArray + "Length: " + teethBlobArray.length);
-    // console.log(teethBlobArray[0]);
-    // console.log("Existing Condition" + existingConditionBlobArray + "Length: " + existingConditionBlobArray.length);
-
-    setChartData(prevChartData => ({
-      ...prevChartData,
-      treatmentPlanValues: compressedTreatmentValues,
-      lesionStatusValues: compressedLesionStatuses,
-      icdasCodeValues: compressedICDASCodes,
-
-      teeth18Blob: teethBlobArray[0], teeth17Blob: teethBlobArray[1], teeth16Blob: teethBlobArray[2], teeth15Blob: teethBlobArray[3],
-      teeth14Blob: teethBlobArray[4], teeth13Blob: teethBlobArray[5], teeth12Blob: teethBlobArray[6], teeth11Blob: teethBlobArray[7],
-
-      teeth21Blob: teethBlobArray[8], teeth22Blob: teethBlobArray[9], teeth23Blob: teethBlobArray[10], teeth24Blob: teethBlobArray[11],
-      teeth25Blob: teethBlobArray[12], teeth26Blob: teethBlobArray[13], teeth27Blob: teethBlobArray[14], teeth28Blob: teethBlobArray[15],
-
-      teeth48Blob: teethBlobArray[16], teeth47Blob: teethBlobArray[17], teeth46Blob: teethBlobArray[18], teeth45Blob: teethBlobArray[19],
-      teeth44Blob: teethBlobArray[20], teeth43Blob: teethBlobArray[21], teeth42Blob: teethBlobArray[22], teeth41Blob: teethBlobArray[23],
-
-      teeth31Blob: teethBlobArray[24], teeth32Blob: teethBlobArray[25], teeth33Blob: teethBlobArray[26], teeth34Blob: teethBlobArray[27],
-      teeth35Blob: teethBlobArray[28], teeth36Blob: teethBlobArray[29], teeth37Blob: teethBlobArray[30], teeth38Blob: teethBlobArray[31],
-
-      //existing condition blobs
-
-      
-      existingCondition18Blob: existingConditionBlobArray[0], existingCondition17Blob: existingConditionBlobArray[1], existingCondition16Blob: existingConditionBlobArray[2], existingCondition15Blob: existingConditionBlobArray[3],
-      existingCondition14Blob: existingConditionBlobArray[4], existingCondition13Blob: existingConditionBlobArray[5], existingCondition12Blob: existingConditionBlobArray[6],  existingCondition11Blob: existingConditionBlobArray[7],
-      
-      existingCondition21Blob: existingConditionBlobArray[8], existingCondition22Blob: existingConditionBlobArray[9], existingCondition23Blob: existingConditionBlobArray[10], existingCondition24Blob: existingConditionBlobArray[11],
-      existingCondition25Blob: existingConditionBlobArray[12], existingCondition26Blob: existingConditionBlobArray[13], existingCondition27Blob: existingConditionBlobArray[14], existingCondition28Blob: existingConditionBlobArray[15],
-      
-      existingCondition48Blob: existingConditionBlobArray[16], existingCondition47Blob: existingConditionBlobArray[17], existingCondition46Blob: existingConditionBlobArray[18], existingCondition45Blob: existingConditionBlobArray[19], 
-      existingCondition44Blob: existingConditionBlobArray[20], existingCondition43Blob: existingConditionBlobArray[21], existingCondition42Blob: existingConditionBlobArray[22], existingCondition41Blob: existingConditionBlobArray[23],
-      
-      existingCondition31Blob: existingConditionBlobArray[24], existingCondition32Blob: existingConditionBlobArray[25], existingCondition33Blob: existingConditionBlobArray[26], existingCondition34Blob: existingConditionBlobArray[27],
-      existingCondition35Blob: existingConditionBlobArray[28], existingCondition36Blob: existingConditionBlobArray[29], existingCondition37Blob: existingConditionBlobArray[30], existingCondition38Blob: existingConditionBlobArray[31]
-    }));
-
-    let numbersX = [18, 17, 16, 15, 14, 13, 12, 11,
-                              21, 22, 23, 24, 25, 26, 27, 28,
-                              48, 47, 46, 45, 44, 43, 42, 41,
-                              31, 32, 33, 34, 35, 36, 37, 38];
-        //save blobs to db
-      //idea 4 start
-    async function sendTeethECData() {
-        try {
-            // Create a FormData object
-            let formData = new FormData();
-            //formData.append(`id`, 1);
-            // Append blob data
-            for (let i = 0; i < teethBlobArray.length; i++) {
-                formData.append(`teeth${numbersX[i]}`, teethBlobArray[i]);
-            }
-
-            for (let i = 0; i < existingConditionBlobArray.length; i++) {
-                formData.append(`EC${numbersX[i]}`, existingConditionBlobArray[i]);
-            }
-            formData.append(`treatmentPlans`, compressedTreatmentValues);
-            formData.append(`lesionStatuses`, compressedLesionStatuses);
-            formData.append(`lesionStatuses`, compressedLesionStatuses);
-            formData.append(`icdasCodes`, compressedICDASCodes);
-            formData.append(`patientNumber`, initialData.patientID);
-
-            // Send the FormData object to the backend using await
-            const response = await fetch('http://localhost:8080/dentapp/chart/savechart', {
-                method: 'PUT',
-                body: formData,
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error status: ${response.status}`);
-            }
-
-            const data = await response.json(); // Assuming the response is JSON
-            console.log(data);
-            alert("Submit Successful");
-            
-        } catch (error) {
-            console.error('Error:', error);
-        }
-    }
-
-    sendTeethECData();
   };
 
   function removeLeadingZeros(numberString) {
@@ -827,26 +506,22 @@ const ChartEdit = ({isChartDisabled}) => {
 
   const handleSquareClick = (index, type) => {
 
-    if(!isChartDisabled){
+    setButtonPopup(true);
 
-      setButtonPopup(true);
+    switch (type) {
 
-      switch (type) {
+      case 'top':
+        setBoxType("top");
+        break;
 
-        case 'top':
-          setBoxType("top");
-          break;
+      case 'bottom':
+        setBoxType("bottom");
+        break;
 
-        case 'bottom':
-          setBoxType("bottom");
-          break;
-
-        default:
-          break;
-      }
-      setCurrentIndex(index);
+      default:
+        break;
     }
-    
+    setCurrentIndex(index);
   };
 
 
@@ -1261,11 +936,9 @@ const ChartEdit = ({isChartDisabled}) => {
         }
 
       </Popup>
-      <div id='save-chart-btn'> 
-      {!isChartDisabled && (
-        <button className='patientBtn' onClick={handleSaveChart}> Save </button>
-      )}
-      </div>
+      {/* <div id='save-chart-btn'> 
+        <button className='patientBtn' onClick={handleSaveChart}> Save </button> 
+      </div> */}
       
     </div>
     </div>
@@ -1274,4 +947,4 @@ const ChartEdit = ({isChartDisabled}) => {
   );
 }
 
-export default ChartEdit;
+export default Chart;

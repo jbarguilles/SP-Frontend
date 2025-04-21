@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'; // Removed useRef and ArrowUpIcon imports
 
 // Import teeth images
 import teeth18 from '/teeth-image/18.png';
@@ -36,6 +36,7 @@ import teeth37 from '/teeth-image/37.png';
 import teeth38 from '/teeth-image/38.png';
 
 import ECBG from '/init_EC.png';
+import TeethModal from './TeethModal';
 
 interface Props {
   formData: any;
@@ -45,9 +46,8 @@ interface Props {
 // Square component
 const Square: React.FC<{
   options: string[];
-  onclick: () => void;
   values: { top: number; right: number; bottom: number; left: number; center: number; }
-}> = ({ options, onclick, values }) => {
+}> = ({ options, values }) => {
   return (
     <svg viewBox="0 0 80 45">
       <g id="buttons">
@@ -66,48 +66,7 @@ const Square: React.FC<{
         <rect id="center" x="20" y="13" height="19" width="40" fill="white" stroke="black" strokeWidth="1"/>
         <text x="40" y="26" textAnchor="middle" fill="black" fontSize="10">{options[values.center]}</text>
         
-        <rect id="whole" x="0" y="0" height="45" width="80" fillOpacity="0" onClick={onclick}/>
-      </g>
-    </svg>
-  );
-};
-
-// BigSquare component
-const BigSquare: React.FC<{
-  options: string[];
-  values: { top: number; right: number; bottom: number; left: number; center: number; }
-  setValues: React.Dispatch<React.SetStateAction<any>>;
-  index: number;
-  setValuesArray: React.Dispatch<React.SetStateAction<any[]>>;
-}> = ({ options, values, index, setValuesArray }) => {
-  const handleClick = (direction: string) => {
-    setValuesArray((prevValuesArray) => {
-      const updatedValuesArray = [...prevValuesArray];
-      updatedValuesArray[index] = {
-        ...prevValuesArray[index],
-        [direction]: (prevValuesArray[index][direction] + 1) % options.length,
-      };
-      return updatedValuesArray;
-    });
-  };
-
-  return (
-    <svg viewBox="0 0 240 135" id="popup-box">
-      <g id="buttons">
-        <polygon id="top" points="0,0 240,0 180,39 60,39" fill="white" stroke="black" strokeWidth="1" onClick={() => handleClick('top')} />
-        <text x="120" y="28" textAnchor="middle" fill="black" fontSize="24">{options[values.top]}</text>
-        
-        <polygon id="right" points="240,0 180,39 180,96 240,135" fill="white" stroke="black" strokeWidth="1" onClick={() => handleClick('right')} />
-        <text x="211" y="77" textAnchor="middle" fill="black" fontSize="24">{options[values.right]}</text>
-
-        <polygon id="bottom" points="240,135 180,96 60,96 0,135" fill="white" stroke="black" strokeWidth="1" onClick={() => handleClick('bottom')} />
-        <text x="120" y="124" textAnchor="middle" fill="black" fontSize="24">{options[values.bottom]}</text>
-
-        <polygon id="left" points="0,135 60,96 60,39 0,0" fill="white" stroke="black" strokeWidth="1" onClick={() => handleClick('left')} />
-        <text x="28" y="77" textAnchor="middle" fill="black" fontSize="24">{options[values.left]}</text>
-
-        <rect id="center" x="60" y="39" height="57" width="120" fill="white" stroke="black" strokeWidth="1" onClick={() => handleClick('center')}/>
-        <text x="120" y="77" textAnchor="middle" fill="black" fontSize="24">{options[values.center]}</text>
+        <rect id="whole" x="0" y="0" height="45" width="80" fillOpacity="0"/>
       </g>
     </svg>
   );
@@ -203,6 +162,11 @@ const DentalStatusCharting: React.FC<Props> = () => {
     teeth31, teeth32, teeth33, teeth34, teeth35, teeth36, teeth37, teeth38
   ]);
 
+  const [showModal, setShowModal] = useState(false);
+  const [selectedSection, setSelectedSection] = useState({ index: 0, position: '' });
+
+  const [drawings, setDrawings] = useState<{ [key: string]: string }>({});
+
   const handleSquareClick = (index: number, position: string) => {
     if (position === 'top') {
       setTreatmentPlanValuesArrayTop((prevValuesArray) => {
@@ -225,11 +189,75 @@ const DentalStatusCharting: React.FC<Props> = () => {
     }
   };
 
+  const handleSectionClick = (index: number, position: string) => {
+    setSelectedSection({ index, position });
+    setShowModal(true);
+  };
+
+  const handleModalClose = () => {
+    setShowModal(false);
+  };
+
+  const handleTreatmentChange = (values: any) => {
+    if (selectedSection.position === 'top') {
+      setTreatmentPlanValuesArrayTop(prev => {
+        const newArray = [...prev];
+        newArray[selectedSection.index] = values;
+        return newArray;
+      });
+    } else {
+      setTreatmentPlanValuesArrayBottom(prev => {
+        const newArray = [...prev];
+        newArray[selectedSection.index] = values;
+        return newArray;
+      });
+    }
+  };
+
+  const handleLesionChange = (values: any) => {
+    if (selectedSection.position === 'top') {
+      setLesionStatusValuesArrayTop(prev => {
+        const newArray = [...prev];
+        newArray[selectedSection.index] = values;
+        return newArray;
+      });
+    } else {
+      setLesionStatusValuesArrayBottom(prev => {
+        const newArray = [...prev];
+        newArray[selectedSection.index] = values;
+        return newArray;
+      });
+    }
+  };
+
+  const handleICDASChange = (values: any) => {
+    if (selectedSection.position === 'top') {
+      setIcdasValuesArrayTop(prev => {
+        const newArray = [...prev];
+        newArray[selectedSection.index] = values;
+        return newArray;
+      });
+    } else {
+      setIcdasValuesArrayBottom(prev => {
+        const newArray = [...prev];
+        newArray[selectedSection.index] = values;
+        return newArray;
+      });
+    }
+  };
+
+  const handleDrawingChange = (toothNumber: string, dataUrl: string) => {
+    setDrawings(prev => ({
+      ...prev,
+      [`${selectedSection.position}-${selectedSection.index}`]: dataUrl
+    }));
+  };
+
   return (
-    <fieldset className="mb-6 p-4 rounded-lg border border-green-800 flex justify-center items-center">
+    <fieldset className="mb-6 p-4 rounded-lg border border-green-800 flex justify-center items-center relative">
       <legend className="text-lg font-semibold text-green-800">Dental Status Chart</legend>
       
-      <div className="chart-container w-full overflow-x-auto flex justify-center">
+      <div className="chart-container w-full overflow-x-auto flex justify-center relative">
         <div id="container-wrapper" className="flex flex-col min-w-fit">
           {/* Top Treatment Plan Row */}
           <div className="container flex items-center">
@@ -245,10 +273,9 @@ const DentalStatusCharting: React.FC<Props> = () => {
 
             <div className="flex">
               {[...Array(16)].map((_, index) => (
-                <div key={index} className="w-16">
+                <div key={index} className="w-16" onClick={() => handleSectionClick(index, 'top')}>
                   <Square 
                     options={treatmentPlans} 
-                    onclick={() => handleSquareClick(index, 'top')} 
                     values={treatmentPlanValuesArrayTop[index]}
                   />
                 </div>
@@ -270,10 +297,9 @@ const DentalStatusCharting: React.FC<Props> = () => {
 
             <div className="flex">
               {[...Array(16)].map((_, index) => (
-                <div key={index} className="w-16">
+                <div key={index} className="w-16" onClick={() => handleSectionClick(index, 'top')}>
                   <Square 
                     options={lesionStatus} 
-                    onclick={() => handleSquareClick(index, 'top')} 
                     values={lesionStatusValuesArrayTop[index]}
                   />
                 </div>
@@ -295,10 +321,9 @@ const DentalStatusCharting: React.FC<Props> = () => {
 
             <div className="flex">
               {[...Array(16)].map((_, index) => (
-                <div key={index} className="w-16">
+                <div key={index} className="w-16" onClick={() => handleSectionClick(index, 'top')}>
                   <Square 
                     options={icdasCode} 
-                    onclick={() => handleSquareClick(index, 'top')} 
                     values={icdasValuesArrayTop[index]}
                   />
                 </div>
@@ -320,7 +345,7 @@ const DentalStatusCharting: React.FC<Props> = () => {
 
               <div className="flex">
                 {[...Array(16)].map((_, index) => (
-                  <div key={index} style={{ width: '64px', height: '36px' }} onClick={() => handleSquareClick(index, 'top')}>
+                  <div key={index} style={{ width: '64px', height: '36px' }} onClick={() => handleSectionClick(index, 'top')}>
                     <svg viewBox="0 0 80 45">
                       <g>
                         <polygon points="0,0 80,0 80,45 0,45" fill="white" stroke="black" strokeWidth="1"/>
@@ -349,7 +374,7 @@ const DentalStatusCharting: React.FC<Props> = () => {
 
               <div className="flex">
                 {upperTeeth.map((tooth, index) => (
-                  <div key={index} style={{ width: '64px' }} onClick={() => handleSquareClick(index, 'top')}>
+                  <div key={index} style={{ width: '64px' }} onClick={() => handleSectionClick(index, 'top')}>
                     <svg viewBox="0 0 80 160" className="upperTeeth">
                       <g>
                         <polygon points="0,0 80,0 80,160 0,160" fill="white" stroke="black" strokeWidth="1"/>
@@ -381,7 +406,7 @@ const DentalStatusCharting: React.FC<Props> = () => {
 
               <div className="flex">
                 {lowerTeeth.map((tooth, index) => (
-                  <div key={index} style={{ width: '64px' }} onClick={() => handleSquareClick(index, 'bottom')}>
+                  <div key={index} style={{ width: '64px' }} onClick={() => handleSectionClick(index, 'bottom')}>
                     <svg viewBox="0 0 80 160" className="lowerTeeth">
                       <g>
                         <polygon points="0,0 80,0 80,160 0,160" fill="white" stroke="black" strokeWidth="1"/>
@@ -411,7 +436,7 @@ const DentalStatusCharting: React.FC<Props> = () => {
 
               <div className="flex">
                 {[...Array(16)].map((_, index) => (
-                  <div key={index} style={{ width: '64px', height: '36px' }} onClick={() => handleSquareClick(index, 'bottom')}>
+                  <div key={index} style={{ width: '64px', height: '36px' }} onClick={() => handleSectionClick(index, 'bottom')}>
                     <svg viewBox="0 0 80 45">
                       <g>
                         <polygon points="0,0 80,0 80,45 0,45" fill="white" stroke="black" strokeWidth="1"/>
@@ -438,10 +463,9 @@ const DentalStatusCharting: React.FC<Props> = () => {
 
             <div className="flex">
               {[...Array(16)].map((_, index) => (
-                <div key={index} className="w-16">
+                <div key={index} className="w-16" onClick={() => handleSectionClick(index, 'bottom')}>
                   <Square 
                     options={icdasCode} 
-                    onclick={() => handleSquareClick(index, 'bottom')} 
                     values={icdasValuesArrayBottom[index]}
                   />
                 </div>
@@ -463,10 +487,9 @@ const DentalStatusCharting: React.FC<Props> = () => {
 
             <div className="flex">
               {[...Array(16)].map((_, index) => (
-                <div key={index} className="w-16">
+                <div key={index} className="w-16" onClick={() => handleSectionClick(index, 'bottom')}>
                   <Square 
                     options={lesionStatus} 
-                    onclick={() => handleSquareClick(index, 'bottom')} 
                     values={lesionStatusValuesArrayBottom[index]}
                   />
                 </div>
@@ -488,10 +511,9 @@ const DentalStatusCharting: React.FC<Props> = () => {
 
             <div className="flex">
               {[...Array(16)].map((_, index) => (
-                <div key={index} className="w-16">
+                <div key={index} className="w-16" onClick={() => handleSectionClick(index, 'bottom')}>
                   <Square 
                     options={treatmentPlans} 
-                    onclick={() => handleSquareClick(index, 'bottom')} 
                     values={treatmentPlanValuesArrayBottom[index]}
                   />
                 </div>
@@ -500,6 +522,26 @@ const DentalStatusCharting: React.FC<Props> = () => {
           </div>
         </div>
       </div>
+
+      <TeethModal 
+        isOpen={showModal}
+        onClose={handleModalClose}
+        section={selectedSection}
+        treatmentValues={selectedSection.position === 'top' 
+          ? treatmentPlanValuesArrayTop[selectedSection.index]
+          : treatmentPlanValuesArrayBottom[selectedSection.index]}
+        lesionValues={selectedSection.position === 'top'
+          ? lesionStatusValuesArrayTop[selectedSection.index]
+          : lesionStatusValuesArrayBottom[selectedSection.index]}
+        icdasValues={selectedSection.position === 'top'
+          ? icdasValuesArrayTop[selectedSection.index]
+          : icdasValuesArrayBottom[selectedSection.index]}
+        savedDrawing={drawings[`${selectedSection.position}-${selectedSection.index}`]}
+        onDrawingChange={handleDrawingChange}
+        onTreatmentChange={handleTreatmentChange}
+        onLesionChange={handleLesionChange}
+        onICDASChange={handleICDASChange}
+      />
     </fieldset>
   );
 };

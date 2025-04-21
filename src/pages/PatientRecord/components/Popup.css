@@ -1,0 +1,89 @@
+.popup{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.2);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+
+}
+
+.popup-inner{
+    display: flex;
+    justify-content: center;
+    position: relative;
+    padding: 32px;
+    width: 100%;
+    max-width: 640px;
+    background-color: #FFF;
+
+    max-height: 90vh; /*Set a maximum height for the inner content*/
+    overflow-y: auto; /* Enable vertical scrollbar when content overflows */
+}
+
+.popup-content{
+    height: fit-content;
+    width: 700px;
+}
+
+.popup-inner .close-btn{
+    position: absolute;
+    top: 16px;
+    right: 16px;
+}
+
+#existingCondition-canvas{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#teeth-canvas{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 50px;
+}
+
+svg#popup-box {
+    display: block;
+    width: 320px;
+    height: 180px;
+    margin: 10px;
+    margin-bottom: 40px;
+    margin-left: auto; 
+    margin-right: auto;
+    stroke: black;
+  }
+
+#buttons {
+    fill: transparent;
+}
+
+.svg-container {
+    display: flex;
+    justify-content: center;
+}
+
+.popup-subcontainer{
+    display: flex;
+    justify-content: center;
+}
+
+.popup-subcontainer canvas{
+    padding: auto;
+}
+
+#existing-condition-popup-container{
+    margin-top: 10px;
+}
+
+
+
+  
+  
